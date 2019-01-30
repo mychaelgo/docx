@@ -12,6 +12,11 @@ import (
 	"strings"
 )
 
+const (
+	wordDocumentXml     = `word\document.xml`
+	wordRelsDocumentXml = `word\_rels\document.xml.rels`
+)
+
 //Contains functions to work with data from a zip file
 type ZipData interface {
 	files() []*zip.File
@@ -141,9 +146,9 @@ func (d *Docx) Write(ioWriter io.Writer) (err error) {
 		if err != nil {
 			return err
 		}
-		if file.Name == "word/document.xml" {
+		if file.Name == wordDocumentXml {
 			writer.Write([]byte(d.content))
-		} else if file.Name == "word/_rels/document.xml.rels" {
+		} else if file.Name == wordRelsDocumentXml {
 			writer.Write([]byte(d.links))
 		} else if strings.Contains(file.Name, "header") && d.headers[file.Name] != "" {
 			writer.Write([]byte(d.headers[file.Name]))
@@ -290,7 +295,7 @@ func wordDocToString(reader io.Reader) (string, error) {
 
 func retrieveWordDoc(files []*zip.File) (file *zip.File, err error) {
 	for _, f := range files {
-		if f.Name == "word/document.xml" {
+		if f.Name == wordDocumentXml {
 			file = f
 		}
 	}
@@ -302,7 +307,7 @@ func retrieveWordDoc(files []*zip.File) (file *zip.File, err error) {
 
 func retrieveLinkDoc(files []*zip.File) (file *zip.File, err error) {
 	for _, f := range files {
-		if f.Name == "word/_rels/document.xml.rels" {
+		if f.Name == wordRelsDocumentXml {
 			file = f
 		}
 	}
